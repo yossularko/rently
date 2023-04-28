@@ -76,8 +76,21 @@ export class ItemsService {
     return item;
   }
 
-  update(id: number, updateItemDto: UpdateItemDto) {
-    return `This action updates a #${id} item`;
+  async update(id: number, updateItemDto: UpdateItemDto): Promise<Item> {
+    const { name, isForRent } = updateItemDto;
+    try {
+      return await this.prismaService.item.update({
+        where: { id },
+        data: { name, isForRent },
+      });
+    } catch (error) {
+      if (error.code) {
+        if (error.code === 'P2025') {
+          throw new NotFoundException(error.meta?.cause);
+        }
+      }
+      throw new InternalServerErrorException(error);
+    }
   }
 
   remove(id: number) {
