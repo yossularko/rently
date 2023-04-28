@@ -41,7 +41,7 @@ export class ItemsController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.itemsService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.itemsService.remove(id);
   }
 }

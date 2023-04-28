@@ -93,7 +93,16 @@ export class ItemsService {
     }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} item`;
+  async remove(id: number) {
+    try {
+      return await this.prismaService.item.delete({ where: { id } });
+    } catch (error) {
+      if (error.code) {
+        if (error.code === 'P2025') {
+          throw new NotFoundException(error.meta?.cause);
+        }
+      }
+      throw new InternalServerErrorException(error);
+    }
   }
 }
