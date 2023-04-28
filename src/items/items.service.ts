@@ -39,12 +39,23 @@ export class ItemsService {
     }
   }
 
-  findAll() {
-    return `This action returns all items`;
+  async findAll(): Promise<Item[]> {
+    return await this.prismaService.item.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} item`;
+  async findOne(id: number): Promise<Item | null> {
+    const item = await this.prismaService.item.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!item) {
+      // optional, you can return null/undefined depending on your use case
+      throw new NotFoundException(`Item id ${id} is not found`);
+    }
+
+    return item;
   }
 
   update(id: number, updateItemDto: UpdateItemDto) {
