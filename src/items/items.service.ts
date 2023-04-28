@@ -48,12 +48,23 @@ export class ItemsService {
       where: {
         id,
       },
+      include: {
+        User: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
     });
 
     if (!item) {
       // optional, you can return null/undefined depending on your use case
       throw new NotFoundException(`Item id ${id} is not found`);
     }
+
+    delete item.userId;
 
     return item;
   }
