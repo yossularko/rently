@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   InternalServerErrorException,
+  BadRequestException,
 } from '@nestjs/common';
 import { Item } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -39,8 +40,14 @@ export class ItemsService {
     }
   }
 
-  async findAll(): Promise<Item[]> {
-    return await this.prismaService.item.findMany();
+  async findAll(userId?: string): Promise<Item[]> {
+    if (userId && Number.isNaN(+userId)) {
+      throw new BadRequestException('UserId is not a number');
+    }
+
+    return await this.prismaService.item.findMany({
+      where: userId ? { userId: +userId } : undefined,
+    });
   }
 
   async findOne(id: number): Promise<Item | null> {
